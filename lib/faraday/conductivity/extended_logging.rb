@@ -30,11 +30,11 @@ module Faraday
       private
 
       def request_info(env)
-        "Started #{env[:method].to_s.upcase} request to: #{env[:url]}"
+        "Started %s request to: %s" % [ env[:method].to_s.upcase, env[:url] ]
       end
 
       def response_info(env, response_time)
-        "Response from #{env[:url]}; Status: #{env[:status]}; Time: %.1fms" % (response_time * 1_000.0)
+        "Response from %s; Status: %d; Time: %.1fms" % [ env[:url], env[:status], (response_time * 1_000.0) ]
       end
 
       def request_debug(env)
