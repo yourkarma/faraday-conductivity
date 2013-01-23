@@ -2,6 +2,22 @@
 
 Extra Faraday Middleware! Geared towards a service oriented architecture.
 
+These middlewares are currently included:
+
+* **user_agent**, adds a dynamic `User-Agent` header to the request, so you
+  know which server and process the request is coming from.
+* **extended_logging**, logs *all* the information of the request.
+* **request_id**, passes along the `X-Request-Id` header to track API request
+  back to the source.
+* **mimetype**, allows you to specify the `Accept` header for API versioning.
+
+Further information:
+
+* [faraday](https://github.com/lostisland/faraday)
+* [faraday_middleware](https://github.com/lostisland/faraday_middleware)
+
+## Example
+
 Here is an overview of my favorite stack. More information about each
 middleware is below.
 
@@ -11,7 +27,7 @@ APP_VERSION = IO.popen(["git", "rev-parse", "HEAD", :chdir => Rails.root]).read.
 connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 
   # provided by Faraday itself
-  faraday.token_auth   "secret"
+  faraday.token_auth "secret"
 
   # provided by this gem
   faraday.use :extended_logging, logger: Rails.logger
@@ -23,6 +39,7 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
   # provided by this gem
   faraday.request :user_agent, app: "MarketingSite", version: APP_VERSION
   faraday.request :request_id
+  faraday.request :mimetype, accept: "application/vnd.widgets-v2+json"
 
   # provided by faraday_middleware
   faraday.response :json, content_type: /\bjson$/
@@ -32,24 +49,25 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 end
 ```
 
-You should also take a look at
-[faraday_middleware](https://github.com/lostisland/faraday_middleware).
-
-More middleware to come!
-
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'faraday-conductivity'
+``` ruby
+gem 'faraday-conductivity'
+```
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install faraday-conductivity
+```
+$ gem install faraday-conductivity
+```
 
 ## Usage
 
@@ -91,7 +109,7 @@ class Application < ActionController::Base
 end
 ```
 
-It's a hack, but it works really well.
+It's a hack, because it uses a thread local variable, but it works really well.
 
 ### User Agent
 
