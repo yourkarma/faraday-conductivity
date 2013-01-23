@@ -24,13 +24,14 @@ middleware is below.
 ``` ruby
 APP_VERSION = IO.popen(["git", "rev-parse", "HEAD", :chdir => Rails.root]).read.chomp
 
+require "faraday_middleware"
+require "faraday/conductivity"
+
 connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 
   # provided by Faraday itself
   faraday.token_auth "secret"
 
-  # provided by this gem
-  faraday.use :extended_logging, logger: Rails.logger
 
   # provided by Faraday
   faraday.request :multipart
@@ -40,6 +41,9 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
   faraday.request :user_agent, app: "MarketingSite", version: APP_VERSION
   faraday.request :request_id
   faraday.request :mimetype, accept: "application/vnd.widgets-v2+json"
+
+  # provided by this gem
+  faraday.use :extended_logging, logger: Rails.logger
 
   # provided by faraday_middleware
   faraday.response :json, content_type: /\bjson$/
@@ -84,6 +88,9 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 end
 ```
 
+Be sure to put this middleware after other middleware that add headers,
+otherwise it will log incomplete requests.
+
 ### RequestID
 
 Pass on a request ID from your frontend applications to your backend services.
@@ -110,6 +117,14 @@ end
 ```
 
 It's a hack, because it uses a thread local variable, but it works really well.
+
+Don't forget to turn on uuid logging in Rails too, by uncommenting the line in
+`config/environments/production.rb`:
+
+``` ruby
+# Prepend all log lines with the following tags
+config.log_tags = [ :uuid ]
+```
 
 ### User Agent
 
