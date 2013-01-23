@@ -38,26 +38,22 @@ module Faraday
       end
 
       def request_debug(env)
-        <<-MESSAGE
-          Request Headers:
-          ----------------
-          #{format_headers env[:request_headers]}
-
-          Request Body:
-          -------------
-          #{env[:body]}
-        MESSAGE
+        debug_message("Request", env[:request_headers], env[:body])
       end
 
       def response_debug(env)
-        <<-MESSAGE
-          Response Headers:
-          -----------------
-          #{format_headers env[:response_headers]}
+        debug_message("Response", env[:response_headers], env[:body])
+      end
 
-          Response Body:
-          --------------
-          #{env[:body]}
+      def debug_message(name, headers, body)
+        <<-MESSAGE.gsub(/^ +([^ ])/m, '\\1')
+        #{name} Headers:
+        ----------------
+        #{format_headers(headers)}
+
+        #{name} Body:
+        -------------
+        #{body}
         MESSAGE
       end
 
