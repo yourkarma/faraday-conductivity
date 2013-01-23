@@ -45,6 +45,14 @@ describe Faraday::Conductivity do
     response.env[:request_headers]["X-Request-Id"].should eq "my-request-id"
   end
 
+  example "mimetype" do
+    mimetype = "application/vnd.users-v2+json"
+    response = request_with do |faraday|
+      faraday.request :mimetype, accept: mimetype
+    end
+    response.env[:request_headers]["Accept"].should eq mimetype
+  end
+
   def request_with
     stubs = Faraday::Adapter::Test::Stubs.new do |stub|
       stub.get('/test') { |env| [200, {"X-Response-Header" => "header-value"}, {foo:"the dummy response"}.to_json] }
