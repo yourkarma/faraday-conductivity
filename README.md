@@ -31,9 +31,6 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 
   # provided by Faraday itself
   faraday.token_auth "secret"
-
-
-  # provided by Faraday
   faraday.request :multipart
   faraday.request :url_encoded
 

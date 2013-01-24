@@ -59,7 +59,7 @@ module Faraday
 
       def format_headers(headers)
         length = headers.map {|k,v| k.to_s.size }.max
-        headers.map { |name, value| "#{name.to_s.ljust(length)} : #{value.inspect}" }.join("\n")
+        headers.map { |name, value| "#{name.to_s.ljust(length)} : #{value}" }.join("\n")
       end
 
     end
