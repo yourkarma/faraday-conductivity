@@ -14,7 +14,7 @@ describe Faraday::Conductivity::ExtendedLogging do
   end
 
   it "includes the request headers" do
-    log.should include "X-Foo : bar"
+    log.should match %r"X-Foo\s+: bar"
   end
 
   it "includes the complete URL" do

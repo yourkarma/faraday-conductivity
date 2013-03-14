@@ -13,7 +13,7 @@ module Faraday
       end
 
       def call(env)
-        env[:request_headers]['User-Agent'] ||= user_agent
+        env[:request_headers]['User-Agent'] = user_agent
         @app.call(env)
       end
 
