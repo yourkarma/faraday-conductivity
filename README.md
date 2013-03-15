@@ -140,6 +140,36 @@ The User-Agent will looks like this on my machine:
 MarketingSite/1.1 (iain.local; iain; 30360) ruby/1.9.3 (327; x86_64-darwin12.2.0)
 ```
 
+### Repeater
+
+The Repeater will retry your requests until they succeed. This is handy for
+reaching servers that are not too reliable.
+
+``` ruby
+connection = Faraday.new(url: "http://slow.website.com") do |faraday|
+  faraday.use :repeater, retries: 6, mode: :rapid
+end
+```
+
+The `retries` parameter specifies how many times to retry before succeeding.
+
+The `mode` parameter specifies how long to wait before retrying. `:rapid` will
+retry instantly, `:one`, will wait one second between retries, `:linear` and
+`:exponential` will retry longer and longer after every retry.
+
+It's also possible to specify your own pattern by providing a lambda, that
+returns the number of seconds to wait. For example:
+
+``` ruby
+connection = Faraday.new(url: "http://slow.website.com") do |faraday|
+  faraday.use :repeater, retries: 6, pattern: ->(n) { rand < 0.5 ? 10 : 2 }
+end
+```
+
+You can use the repeater together with the `raise_error` middleware to also
+retry after getting 404s and other succeeded requests, but failed statuses.
+
+
 ## Contributing
 
 1. Fork it
