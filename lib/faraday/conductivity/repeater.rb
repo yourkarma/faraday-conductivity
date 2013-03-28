@@ -26,7 +26,7 @@ module Faraday
         tries = 0
         begin
           @app.call(env)
-        rescue Faraday::Error::ClientError
+        rescue Faraday::Error::ClientError, SystemCallError
           if tries < @retries
             tries += 1
             @pattern.wait(tries)
