@@ -6,10 +6,10 @@ module SpecHelper
     connection.get("/test")
   end
 
-  def create_connection
+  def create_connection(the_stubs = stubs)
     Faraday.new(url: "http://widgets.example.org") do |faraday|
       yield faraday
-      faraday.adapter :test, stubs
+      faraday.adapter :test, the_stubs
     end
   end
 

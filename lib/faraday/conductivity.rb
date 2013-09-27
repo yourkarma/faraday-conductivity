@@ -8,14 +8,16 @@ require "faraday/conductivity/request_id"
 require "faraday/conductivity/request_id_filter"
 require "faraday/conductivity/user_agent"
 require "faraday/conductivity/repeater"
+require "faraday/conductivity/selective_errors"
 
 module Faraday
   module Conductivity
   end
-  register_middleware :middleware, :extended_logging => Faraday::Conductivity::ExtendedLogging
-  register_middleware :request, :user_agent => Faraday::Conductivity::UserAgent
-  register_middleware :request, :request_id => Faraday::Conductivity::RequestId
-  register_middleware :request, :mimetype => Faraday::Conductivity::Mimetype
-  register_middleware :middleware, :repeater => Faraday::Conductivity::Repeater
+  register_middleware :middleware,  :extended_logging => Faraday::Conductivity::ExtendedLogging
+  register_middleware :request,     :user_agent       => Faraday::Conductivity::UserAgent
+  register_middleware :request,     :request_id       => Faraday::Conductivity::RequestId
+  register_middleware :request,     :mimetype         => Faraday::Conductivity::Mimetype
+  register_middleware :middleware,  :repeater         => Faraday::Conductivity::Repeater
+  register_middleware :response,    :selective_errors => Faraday::Conductivity::SelectiveErrors
 end
 

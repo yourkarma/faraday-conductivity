@@ -10,6 +10,7 @@ These middlewares are currently included:
 * **request_id**, passes along the `X-Request-Id` header to track API request
   back to the source.
 * **mimetype**, allows you to specify the `Accept` header for API versioning.
+* **selective_errors**, raise errors only on the statuses that you specify.
 
 Further information:
 
@@ -44,6 +45,9 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 
   # provided by faraday_middleware
   faraday.response :json, content_type: /\bjson$/
+
+  # provided by this gem
+  faraday.response :selective_errors, on: 425..599, except: 402..499
 
   faraday.adapter Faraday.default_adapter
 
@@ -169,6 +173,26 @@ end
 You can use the repeater together with the `raise_error` middleware to also
 retry after getting 404s and other succeeded requests, but failed statuses.
 
+### Selective Errors
+
+The default `:raise_error` middleware raises errors for every http status above
+400. However, status codes like 404 or 422 might not be an actual exceptional
+condition. This middleware allows you to specify which status codes you do and
+do not want to raise an error for.
+
+You can pass in an array or a range to the `:on` argument. This will default to
+400...600. You can specify exceptions with the `:except` argument.
+
+``` ruby
+connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
+  faraday.response :selective_errors, on: (400...600), except: [404, 409, 410, 412, 422]
+end
+```
+
+The errors raised will be the same as Faraday, namely
+`Faraday::Error::ResourceNotFound` for 404 errors,
+`Faraday::Error::ConnectionFailed` for 407 and `Faraday::Error::ClientError` for
+the rest. These all inherit from `Faraday::Error`.
 
 ## Contributing
 
