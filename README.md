@@ -1,4 +1,4 @@
-# Faraday::Conductivity
+# Faraday::Conductivity [![Build Status](https://travis-ci.org/yourkarma/faraday-conductivity.png?branch=master)](https://travis-ci.org/yourkarma/faraday-conductivity)
 
 Extra Faraday Middleware! Geared towards a service oriented architecture.
 
