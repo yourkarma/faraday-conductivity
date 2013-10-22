@@ -17,7 +17,7 @@ module Faraday
 
       def call(env)
         start_time = Time.now
-        info  { request_info(env) }
+        debug { request_info(env) }
         debug { request_debug(env) }
         @app.call(env).on_complete do
           end_time = Time.now
@@ -34,7 +34,7 @@ module Faraday
       end
 
       def response_info(env, response_time)
-        "Response from %s; Status: %d; Time: %.1fms" % [ env[:url], env[:status], (response_time * 1_000.0) ]
+        "Response from %s %s; Status: %d; Time: %.1fms" % [ env[:method].to_s.upcase, env[:url], env[:status], (response_time * 1_000.0) ]
       end
 
       def request_debug(env)
