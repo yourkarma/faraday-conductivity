@@ -1,5 +1,6 @@
 module Faraday
   module Conductivity
+    # Deprecated. Use RequestHeaders
     class Mimetype < Faraday::Middleware
 
       def initialize(app, options = {})

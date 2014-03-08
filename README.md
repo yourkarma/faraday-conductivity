@@ -9,7 +9,7 @@ These middlewares are currently included:
 * **extended_logging**, logs *all* the information of the request.
 * **request_id**, passes along the `X-Request-Id` header to track API request
   back to the source.
-* **mimetype**, allows you to specify the `Accept` header for API versioning.
+* **request_headers**, allows you to specify default request headers used in each request.
 * **selective_errors**, raise errors only on the statuses that you specify.
 
 Further information:
@@ -38,7 +38,7 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
   # provided by this gem
   faraday.request :user_agent, app: "MarketingSite", version: APP_VERSION
   faraday.request :request_id
-  faraday.request :mimetype, accept: "application/vnd.widgets-v2+json"
+  faraday.request :request_headers, accept: "application/vnd.widgets-v2+json"
 
   # provided by this gem
   faraday.use :extended_logging, logger: Rails.logger
@@ -192,7 +192,44 @@ end
 The errors raised will be the same as Faraday, namely
 `Faraday::Error::ResourceNotFound` for 404 errors,
 `Faraday::Error::ConnectionFailed` for 407 and `Faraday::Error::ClientError` for
-the rest. These all inherit from `Faraday::Error`.
+the rest.
+
+If you don't specify the `:on` or `:except` options, it will behave exactly like
+`:raise_error`. The errors are however "enhanced" with extra information about
+the request that normally are lost:
+
+``` ruby
+begin
+  do_failing_request_here
+rescue Faraday::Error::ClientError => error
+  puts error.request[:url]
+  puts error.request[:method]
+  puts error.request[:body]
+  puts error.request[:headers]
+
+  puts error.response[:status]
+  puts error.response[:body]
+  puts error.response[:headers]
+  puts error.response_time
+end
+```
+
+### Request Headers
+
+Allows you to set request headers ahead of time, so you don't have to do this
+each time you make a request. You can override it per request of course.
+
+Usage:
+
+``` ruby
+connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
+  faraday.request :request_headers, accept: "application/json", x_version_number: "10"
+end
+```
+
+### Mimetype
+
+This one is deprecated. Use Request Headers instead.
 
 ## Contributing
 
