@@ -1,3 +1,6 @@
 language: ruby
 rvm:
   - 2.0.0
+gemfile:
+  - gemfiles/faraday_0.8.gemfile
+  - gemfiles/faraday_0.9.gemfile
