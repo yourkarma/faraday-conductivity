@@ -34,18 +34,39 @@ describe Faraday::Conductivity::SelectiveErrors do
     expect { response_with_status(407) }.to raise_error Faraday::Error::ConnectionFailed
   end
 
+  it "stores more information about the request and response" do
+    apply_selective_errors on: 403..422, except: [408]
+    error = response_with_status(422) rescue $!
+    expect(error.message).to eq "GET http://widgets.example.org/test responded with status 422"
+
+    expect(error.request[:url].to_s).to eq "http://widgets.example.org/test"
+    expect(error.request[:method]).to eq :get
+
+    expect(error.response[:status]).to eq 422
+
+    expect(error.request[:body]).to eq "the request body"
+    expect(error.response[:body]).to eq "the response body"
+
+    expect(error.request[:headers]).to eq "Accept" => "application/json"
+    expect(error.response[:headers]).to eq "X-Foo-Bar" => "y"
+    expect(error.response_time).to be_a Float
+  end
+
   def apply_selective_errors(options)
     @options = options
   end
 
   def response_with_status(status)
     stubs = create_stubs do |stub|
-      stub.get("/test") { |e| [status, {}, "response"] }
+      stub.get("/test") { |e| [status, { :x_foo_bar => "y" }, "the response body"] }
     end
     connection = create_connection(stubs) do |faraday|
       faraday.response :selective_errors, @options
     end
-    connection.get("/test")
+    connection.get("/test") do |f|
+      f.body = "the request body"
+      f.headers = { "Accept" => "application/json" }
+    end
   end
 
 end
