@@ -2,7 +2,7 @@ module Faraday
   module Conductivity
     class RequestIdFilter
 
-      def self.filter(controller)
+      def self.before(controller)
         Thread.current[:request_id] = controller.request.uuid
       end
 
