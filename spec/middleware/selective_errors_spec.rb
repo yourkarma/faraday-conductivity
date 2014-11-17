@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Faraday::Conductivity::SelectiveErrors do
+RSpec.describe Faraday::Conductivity::SelectiveErrors do
 
   subject(:request_headers) { response.env[:request_headers] }
 

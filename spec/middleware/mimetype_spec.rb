@@ -1,11 +1,9 @@
-require 'spec_helper'
-
-describe Faraday::Conductivity::Mimetype do
+RSpec.describe Faraday::Conductivity::Mimetype do
 
   subject(:request_headers) { response.env[:request_headers] }
 
   it "includes the mimetype specified" do
-    request_headers["Accept"].should eq mimetype
+    expect(request_headers["Accept"]).to eq mimetype
   end
 
   let(:mimetype) { "application/vnd.users-v2+json" }

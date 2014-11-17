@@ -1,39 +1,37 @@
-require 'spec_helper'
-
-describe Faraday::Conductivity::UserAgent do
+RSpec.describe Faraday::Conductivity::UserAgent do
 
   subject(:user_agent) { response.env[:request_headers]["User-Agent"] }
 
   it "includes the name and version of the app" do
-    user_agent.should start_with "MarketingSite/1.1"
+    expect(user_agent).to start_with "MarketingSite/1.1"
   end
 
   it "includes the current ruby version" do
-    user_agent.should include RUBY_VERSION
+    expect(user_agent).to include RUBY_VERSION
   end
 
   it "includes the current ruby engine" do
-    user_agent.should include RUBY_ENGINE
+    expect(user_agent).to include RUBY_ENGINE
   end
 
   it "includes the current ruby patch level" do
-    user_agent.should include RUBY_PATCHLEVEL.to_s
+    expect(user_agent).to include RUBY_PATCHLEVEL.to_s
   end
 
   it "includes the platform" do
-    user_agent.should include RUBY_PLATFORM
+    expect(user_agent).to include RUBY_PLATFORM
   end
 
   it "includes the pid" do
-    user_agent.should include "1337"
+    expect(user_agent).to include "1337"
   end
 
   it "includes the current host" do
-    user_agent.should include "my.hostname"
+    expect(user_agent).to include "my.hostname"
   end
 
   it "includes the current user name" do
-    user_agent.should include "linus"
+    expect(user_agent).to include "linus"
   end
 
   let(:environment) {

@@ -1,40 +1,39 @@
-require 'spec_helper'
 require 'logger'
 
-describe Faraday::Conductivity::ExtendedLogging do
+RSpec.describe Faraday::Conductivity::ExtendedLogging do
 
   subject(:log) { io.read }
 
   it "includes the HTTP verb" do
-    log.should include "GET"
+    expect(log).to include "GET"
   end
 
   it "includes the request body" do
-    log.should include "the request body"
+    expect(log).to include "the request body"
   end
 
   it "includes the request headers" do
-    log.should match %r"X-Foo\s+: bar"
+    expect(log).to match %r"X-Foo\s+: bar"
   end
 
   it "includes the complete URL" do
-    log.should include "http://widgets.example.org/test"
+    expect(log).to include "http://widgets.example.org/test"
   end
 
   it "includes the response status" do
-    log.should include "200"
+    expect(log).to include "200"
   end
 
   it "includes the response time" do
-    log.should match(/\d+\.\d+ms/)
+    expect(log).to match(/\d+\.\d+ms/)
   end
 
   it "includes the response headers" do
-    log.should include "X-Bar : foo"
+    expect(log).to include "X-Bar : foo"
   end
 
   it "includes the response body" do
-    log.should include "the response body"
+    expect(log).to include "the response body"
   end
 
   before do

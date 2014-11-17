@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Faraday::Conductivity::Repeater do
+RSpec.describe Faraday::Conductivity::Repeater do
 
   let(:connection) {
     Faraday.new(url: $service_double_url) { |faraday|
@@ -11,7 +9,7 @@ describe Faraday::Conductivity::Repeater do
   }
 
   it "retries after timeouts" do
-    get_with_max(4).body.should eq "fast"
+    expect(get_with_max(4).body).to eq "fast"
   end
 
   it "gives up after a number of retries" do
@@ -34,9 +32,9 @@ describe Faraday::Conductivity::Repeater do
 
   it "waits according to a pattern" do
     pattern = MyPattern.new
-    Faraday::Conductivity::Repeater::Pattern.should_receive(:new).and_return(pattern)
+    expect(Faraday::Conductivity::Repeater::Pattern).to receive(:new).and_return(pattern)
     get_with_max(6)
-    pattern.waited.should eq pattern.waited.sort
+    expect(pattern.waited).to eq pattern.waited.sort
   end
 
   it "handles other errors too" do
@@ -46,9 +44,9 @@ describe Faraday::Conductivity::Repeater do
     }
 
     pattern = double :pattern
-    Faraday::Conductivity::Repeater::Pattern.should_receive(:new).and_return(pattern)
-    pattern.should_receive(:wait).with(1).ordered
-    pattern.should_receive(:wait).with(2).ordered
+    expect(Faraday::Conductivity::Repeater::Pattern).to receive(:new).and_return(pattern)
+    expect(pattern).to receive(:wait).with(1).ordered
+    expect(pattern).to receive(:wait).with(2).ordered
 
     expect { connection.get("/") }.to raise_error(Faraday::Error::ConnectionFailed)
   end

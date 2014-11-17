@@ -1,6 +1,4 @@
-require "spec_helper"
-
-describe Faraday::Conductivity::RequestHeaders do
+RSpec.describe Faraday::Conductivity::RequestHeaders do
 
   it "includes the mimetype specified" do
     connection = create_connection do |faraday|
@@ -8,8 +6,8 @@ describe Faraday::Conductivity::RequestHeaders do
     end
     request_headers = connection.get("/test").env[:request_headers]
 
-    request_headers["Accept"].should eq "application/json"
-    request_headers["X-Version-Number"].should eq "123"
+    expect(request_headers["Accept"]).to eq "application/json"
+    expect(request_headers["X-Version-Number"]).to eq "123"
   end
 
   it "doesn't override locally specified headers" do
@@ -22,7 +20,7 @@ describe Faraday::Conductivity::RequestHeaders do
 
     request_headers = response.env[:request_headers]
 
-    request_headers["Accept"].should eq "application/xml"
+    expect(request_headers["Accept"]).to eq "application/xml"
   end
 
 end
