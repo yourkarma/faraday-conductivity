@@ -15,15 +15,15 @@ module Faraday
         }
       end
 
-      def call(env)
+      def call(request_env)
         start_time = Time.now
-        debug { request_info(env) }
-        debug { request_debug(env) }
-        @app.call(env).on_complete do
+        debug { request_info(request_env) }
+        debug { request_debug(request_env) }
+        @app.call(request_env).on_complete do |response_env|
           end_time = Time.now
           response_time = end_time - start_time
-          info  { response_info(env, response_time) }
-          debug { response_debug(env) }
+          info  { response_info(response_env, response_time) }
+          debug { response_debug(response_env) }
         end
       end
 
