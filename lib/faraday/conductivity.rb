@@ -3,6 +3,7 @@ require "faraday"
 require "faraday/conductivity/version"
 
 require "faraday/conductivity/extended_logging"
+require "faraday/conductivity/default_log_fomatter"
 require "faraday/conductivity/mimetype"
 require "faraday/conductivity/request_id"
 require "faraday/conductivity/request_id_filter"

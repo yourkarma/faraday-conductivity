@@ -13,6 +13,9 @@ module Faraday
           require 'logger'
           ::Logger.new($stderr)
         }
+        @formatter = options.fetch(:formatter) {
+          DefaultLogFormatter.new
+        }
       end
 
       def call(env)
@@ -38,28 +41,11 @@ module Faraday
       end
 
       def request_debug(env)
-        debug_message("Request", env[:request_headers], env[:body])
+        @formatter.build_message("Request", env[:request_headers], env[:body])
       end
 
       def response_debug(env)
-        debug_message("Response", env[:response_headers], env[:body])
-      end
-
-      def debug_message(name, headers, body)
-        <<-MESSAGE.gsub(/^ +([^ ])/m, '\\1')
-        #{name} Headers:
-        ----------------
-        #{format_headers(headers)}
-
-        #{name} Body:
-        -------------
-        #{body}
-        MESSAGE
-      end
-
-      def format_headers(headers)
-        length = headers.map {|k,v| k.to_s.size }.max
-        headers.map { |name, value| "#{name.to_s.ljust(length)} : #{value}" }.join("\n")
+        @formatter.build_message("Response", env[:response_headers], env[:body])
       end
 
     end
