@@ -119,12 +119,19 @@ end
 
 It's a hack, because it uses a thread local variable, but it works really well.
 
-Don't forget to turn on uuid logging in Rails too, by uncommenting the line in
+Don't forget to turn on uuid logging in Rails too. In Rails 4.2, uncomment the line in
 `config/environments/production.rb`:
 
 ``` ruby
 # Prepend all log lines with the following tags
 config.log_tags = [ :uuid ]
+```
+
+In Rails 5, the `request_id` is enabled for log_tags in `config/environments/production.rb`:
+
+```ruby
+# Prepend all log lines with the following tags.
+config.log_tags = [ :request_id ]
 ```
 
 ### User Agent
