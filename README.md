@@ -164,10 +164,7 @@ connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
 end
 ```
 
-The errors raised will be the same as Faraday, namely
-`Faraday::Error::ResourceNotFound` for 404 errors,
-`Faraday::Error::ConnectionFailed` for 407 and `Faraday::Error::ClientError` for
-the rest.
+The errors raised will be the same [as Faraday](https://github.com/lostisland/faraday/blob/019e1a841707718adad2fd05c602eb1a869b42bc/lib/faraday/response/raise_error.rb).
 
 If you don't specify the `:on` or `:except` options, it will behave exactly like
 `:raise_error`. The errors are however "enhanced" with extra information about
@@ -176,7 +173,7 @@ the request that normally are lost:
 ``` ruby
 begin
   do_failing_request_here
-rescue Faraday::Error::ClientError => error
+rescue Faraday::ClientError => error
   puts error.request[:url]
   puts error.request[:method]
   puts error.request[:body]

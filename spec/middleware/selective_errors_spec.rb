@@ -4,7 +4,7 @@ RSpec.describe Faraday::Conductivity::SelectiveErrors do
 
   it "raises an exception if the error is inside the :on argument" do
     apply_selective_errors on: 407..409
-    expect { response_with_status(408) }.to raise_error Faraday::Error::ClientError
+    expect { response_with_status(408) }.to raise_error Faraday::ClientError
   end
 
   it "won't raise an exception when outside the range" do
@@ -19,17 +19,17 @@ RSpec.describe Faraday::Conductivity::SelectiveErrors do
 
   it "raises an exception if included in :on and not included in :except" do
     apply_selective_errors on: 403..422, except: [408]
-    expect { response_with_status(409) }.to raise_error Faraday::Error::ClientError
+    expect { response_with_status(409) }.to raise_error Faraday::ClientError
   end
 
   it "raises a resource not found error when the actual status is 404" do
     apply_selective_errors on: 403..422, except: [408]
-    expect { response_with_status(404) }.to raise_error Faraday::Error::ResourceNotFound
+    expect { response_with_status(404) }.to raise_error Faraday::ResourceNotFound
   end
 
-  it "raises a connection failed on 407" do
+  it "raises proxy auth required on 407" do
     apply_selective_errors on: 403..422, except: [408]
-    expect { response_with_status(407) }.to raise_error Faraday::Error::ConnectionFailed
+    expect { response_with_status(407) }.to raise_error Faraday::ProxyAuthError
   end
 
   it "stores more information about the request and response" do
