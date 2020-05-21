@@ -1,4 +1,8 @@
-# Faraday::Conductivity [![Build Status](https://travis-ci.org/yourkarma/faraday-conductivity.png?branch=master)](https://travis-ci.org/yourkarma/faraday-conductivity)
+# Faraday::Conductivity [![Build Status](https://travis-ci.org/enova/faraday-conductivity.svg?branch=master)](https://travis-ci.org/enova/faraday-conductivity)
+
+Originally implemented by [yourkarma/faraday-conductivity](https://github.com/yourkarma/faraday-conductivity).
+
+---
 
 Extra Faraday Middleware! Geared towards a service oriented architecture.
 
