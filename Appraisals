@@ -1,7 +1,3 @@
-appraise "faraday-0.8" do
-  gem "faraday", "~> 0.8.0"
-end
-
-appraise "faraday-0.9" do
-  gem "faraday", "~> 0.9.0"
+appraise "faraday-1.0.0" do
+  gem "faraday", "~> 1.0.0"
 end

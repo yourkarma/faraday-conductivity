@@ -31,12 +31,3 @@ RSpec.configure do |config|
   config.disable_monkey_patching!
   config.include SpecHelper
 end
-
-require 'service_double'
-
-$service_double_url = "http://localhost:3434"
-
-$service_double = ServiceDouble.hook_into(:rspec) do |config|
-  config.server = File.expand_path('../fake_server.rb', __FILE__)
-  config.url = $service_double_url
-end

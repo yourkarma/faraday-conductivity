@@ -1,4 +1,8 @@
-# Faraday::Conductivity [![Build Status](https://travis-ci.org/yourkarma/faraday-conductivity.png?branch=master)](https://travis-ci.org/yourkarma/faraday-conductivity)
+# Faraday::Conductivity [![Build Status](https://travis-ci.org/enova/faraday-conductivity.svg?branch=master)](https://travis-ci.org/enova/faraday-conductivity)
+
+Originally implemented by [yourkarma/faraday-conductivity](https://github.com/yourkarma/faraday-conductivity).
+
+---
 
 Extra Faraday Middleware! Geared towards a service oriented architecture.
 
@@ -144,7 +148,66 @@ The User-Agent will looks like this on my machine:
 MarketingSite/1.1 (iain.local; iain; 30360) ruby/1.9.3 (327; x86_64-darwin12.2.0)
 ```
 
+### Selective Errors
+
+The default `:raise_error` middleware raises errors for every http status above
+400. However, status codes like 404 or 422 might not be an actual exceptional
+condition. This middleware allows you to specify which status codes you do and
+do not want to raise an error for.
+
+You can pass in an array or a range to the `:on` argument. This will default to
+400...600. You can specify exceptions with the `:except` argument.
+
+``` ruby
+connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
+  faraday.response :selective_errors, on: (400...600), except: [404, 409, 410, 412, 422]
+end
+```
+
+The errors raised will be the same [as Faraday](https://github.com/lostisland/faraday/blob/019e1a841707718adad2fd05c602eb1a869b42bc/lib/faraday/response/raise_error.rb).
+
+If you don't specify the `:on` or `:except` options, it will behave exactly like
+`:raise_error`. The errors are however "enhanced" with extra information about
+the request that normally are lost:
+
+``` ruby
+begin
+  do_failing_request_here
+rescue Faraday::ClientError => error
+  puts error.request[:url]
+  puts error.request[:method]
+  puts error.request[:body]
+  puts error.request[:headers]
+
+  puts error.response[:status]
+  puts error.response[:body]
+  puts error.response[:headers]
+  puts error.response_time
+end
+```
+
+### Request Headers
+
+Allows you to set request headers ahead of time, so you don't have to do this
+each time you make a request. You can override it per request of course.
+
+Usage:
+
+``` ruby
+connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
+  faraday.request :request_headers, accept: "application/json", x_version_number: "10"
+end
+```
+
+## faraday-conductivity ~> 0.3
+
+The following middlewares have been removed entirely and are no longer
+supported, but were available prior in faraday-conductivity versions <= 0.3.
+
 ### Repeater
+
+Suggested to use [Faraday's Retry](https://github.com/lostisland/faraday/blob/master/docs/middleware/request/retry.md)
+instead.
 
 The Repeater will retry your requests until they succeed. This is handy for
 reaching servers that are not too reliable.
@@ -172,60 +235,6 @@ end
 
 You can use the repeater together with the `raise_error` middleware to also
 retry after getting 404s and other succeeded requests, but failed statuses.
-
-### Selective Errors
-
-The default `:raise_error` middleware raises errors for every http status above
-400. However, status codes like 404 or 422 might not be an actual exceptional
-condition. This middleware allows you to specify which status codes you do and
-do not want to raise an error for.
-
-You can pass in an array or a range to the `:on` argument. This will default to
-400...600. You can specify exceptions with the `:except` argument.
-
-``` ruby
-connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
-  faraday.response :selective_errors, on: (400...600), except: [404, 409, 410, 412, 422]
-end
-```
-
-The errors raised will be the same as Faraday, namely
-`Faraday::Error::ResourceNotFound` for 404 errors,
-`Faraday::Error::ConnectionFailed` for 407 and `Faraday::Error::ClientError` for
-the rest.
-
-If you don't specify the `:on` or `:except` options, it will behave exactly like
-`:raise_error`. The errors are however "enhanced" with extra information about
-the request that normally are lost:
-
-``` ruby
-begin
-  do_failing_request_here
-rescue Faraday::Error::ClientError => error
-  puts error.request[:url]
-  puts error.request[:method]
-  puts error.request[:body]
-  puts error.request[:headers]
-
-  puts error.response[:status]
-  puts error.response[:body]
-  puts error.response[:headers]
-  puts error.response_time
-end
-```
-
-### Request Headers
-
-Allows you to set request headers ahead of time, so you don't have to do this
-each time you make a request. You can override it per request of course.
-
-Usage:
-
-``` ruby
-connection = Faraday.new(url: "http://widgets.yourapp.com") do |faraday|
-  faraday.request :request_headers, accept: "application/json", x_version_number: "10"
-end
-```
 
 ### Mimetype
 

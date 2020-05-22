@@ -54,7 +54,8 @@ module Faraday
     #   end
     class SelectiveErrors < Faraday::Middleware
 
-      ClientErrorStatuses = 400...600
+      ClientErrorStatuses = (400...500).freeze
+      ServerErrorStatuses = (500...600).freeze
 
       def initialize(app, options = {})
         @app    = app
@@ -74,33 +75,47 @@ module Faraday
         start_time = Time.now
 
         @app.call(env).on_complete do
-
           status = env[:status]
 
           if should_raise_error?(status)
-            response = {
-              :status  => env[:status],
-              :body    => env[:body],
-              :headers => env[:response_headers],
-            }
             error = case status
-              when 404
-                Faraday::Error::ResourceNotFound.new(response)
-              when 407
-                # mimic the behavior that we get with proxy requests with HTTPS
-                Faraday::Error::ConnectionFailed.new(%{407 "Proxy Authentication Required "})
-              else
-                Faraday::Error::ClientError.new(response)
-              end
+                    when 400
+                      Faraday::BadRequestError.new(response_values(env))
+                    when 401
+                      Faraday::UnauthorizedError.new(response_values(env))
+                    when 403
+                      Faraday::ForbiddenError.new(response_values(env))
+                    when 404
+                      Faraday::ResourceNotFound.new(response_values(env))
+                    when 407
+                      # mimic the behavior that we get with proxy requests with HTTPS
+                      msg = %(407 "Proxy Authentication Required")
+                      Faraday::ProxyAuthError.new(msg, response_values(env))
+                    when 409
+                      Faraday::ConflictError.new(response_values(env))
+                    when 422
+                      Faraday::UnprocessableEntityError.new(response_values(env))
+                    when ClientErrorStatuses
+                      Faraday::ClientError.new(response_values(env))
+                    when ServerErrorStatuses
+                      Faraday::ServerError.new(response_values(env))
+                    when nil
+                      Faraday::NilStatusError.new(response_values(env))
+                    end
+
             error.extend Error
-            error.response = response
+            error.response = response_values(env)
             error.request = request
             error.response_time = Time.now - start_time
-            raise error
 
+            raise error
           end
 
         end
+      end
+
+      def response_values(env)
+        { status: env.status, headers: env.response_headers, body: env.body }
       end
 
       def should_raise_error?(status)
